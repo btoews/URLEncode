@@ -14,13 +14,13 @@ class UrlencodeCommand(sublime_plugin.TextCommand):
         if len(regions) > 1 or not regions[0].empty():
                 for region in view.sel():
                     if not region.empty():
-                        s = view.substr(region)
-                        s = urllib.quote(s)
+                        s = view.substr(region).encode('utf-8')
+                        s = unicode(urllib.quote(s), 'utf-8')
                         view.replace(edit, region, s)
         else:   #format all text
                 alltextreg = sublime.Region(0, view.size())
-                s = view.substr(alltextreg)
-                s = urllib.quote(s)
+                s = view.substr(alltextreg).encode('utf-8')
+                s = unicode(urllib.quote(s), 'utf-8')
                 view.replace(edit, alltextreg, s)
 
 
@@ -36,11 +36,11 @@ class UrldecodeCommand(sublime_plugin.TextCommand):
         if len(regions) > 1 or not regions[0].empty():
                 for region in view.sel():
                     if not region.empty():
-                        s = view.substr(region)
-                        s = urllib.unquote(s)
+                        s = view.substr(region).encode('utf-8')
+                        s = unicode(urllib.unquote(s), 'utf-8')
                         view.replace(edit, region, s)
         else:   #format all text
                 alltextreg = sublime.Region(0, view.size())
-                s = view.substr(alltextreg)
-                s = urllib.unquote(s)
+                s = view.substr(alltextreg).encode('utf-8')
+                s = unicode(urllib.unquote(s), 'utf-8')
                 view.replace(edit, alltextreg, s)
