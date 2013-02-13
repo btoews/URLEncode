@@ -2,7 +2,9 @@ import sublime
 import sublime_plugin
 import urllib
 
-SETTINGS = sublime.load_settings('URLEncode.sublime-settings')
+
+ST3 = sublime.version() == '' or int(sublime.version()) > 3000
+
 
 def get_current_encoding(view, default='utf8'):
     """Get the encoding of view, else return default
@@ -31,23 +33,35 @@ def selections(view, default_to_all=True):
     return regions
 
 
-def quote(view, s):
-    enc = get_current_encoding(view)
-    return urllib.quote(s.encode(enc))
+if ST3:
 
-def unquote(view, s):
-    fallback_encodings = SETTINGS.get('fallback_encodings', [])
-    fallback_encodings.insert(0, get_current_encoding(view))
+    def quote(view, s):
+        return urllib.parse.quote(s)
 
-    s = urllib.unquote(s.encode('utf8'))
+    def unquote(view, s):
+        return urllib.parse.unquote(s)
 
-    # Now decode (to unicode) using best guess encoding
-    for enc in fallback_encodings:
-        try:
-            return s.decode(enc)
-        except UnicodeDecodeError:
-            continue
-    return s
+else:
+    # py26 urllib does not quote unicode, so encode first
+
+    def quote(view, s):
+        enc = get_current_encoding(view)
+        return urllib.quote(s.encode(enc))
+
+    def unquote(view, s):
+        settings = sublime.load_settings('URLEncode.sublime-settings')
+        fallback_encodings = settings.get('fallback_encodings', [])
+        fallback_encodings.insert(0, get_current_encoding(view))
+
+        s = urllib.unquote(s.encode('utf8'))
+
+        ## Now decode (to unicode) using best guess encoding
+        for enc in fallback_encodings:
+            try:
+                return s.decode(enc)
+            except UnicodeDecodeError:
+                continue
+        return s
 
 
 
