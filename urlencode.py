@@ -36,7 +36,7 @@ def selections(view, default_to_all=True):
 if ST3:
 
     def quote(view, s):
-        return urllib.parse.quote(s)
+        return urllib.parse.quote(s, safe='')
 
     def unquote(view, s):
         return urllib.parse.unquote(s)
