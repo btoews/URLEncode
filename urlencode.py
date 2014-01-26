@@ -46,7 +46,7 @@ else:
 
     def quote(view, s):
         enc = get_current_encoding(view)
-        return urllib.quote(s.encode(enc))
+        return urllib.quote(s.encode(enc), safe='')
 
     def unquote(view, s):
         settings = sublime.load_settings('URLEncode.sublime-settings')
