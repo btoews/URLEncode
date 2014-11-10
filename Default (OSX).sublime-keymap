@@ -1,4 +1,4 @@
 [
-	{ "keys": ["super+u", "super+e"], "command": "urlencode" },
-	{ "keys": ["super+u", "super+d"], "command": "urldecode" }	
+	{ "keys": ["super+k", "ctrl+shift+e"], "command": "urlencode" },
+	{ "keys": ["super+k", "ctrl+shift+d"], "command": "urldecode" }
 ]
