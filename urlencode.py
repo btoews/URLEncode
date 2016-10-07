@@ -1,6 +1,8 @@
 import sublime
 import sublime_plugin
 import urllib
+from urllib.parse import quote as parse_quote
+from urllib.parse import unquote as parse_unquote
 
 
 ST3 = sublime.version() == '' or int(sublime.version()) > 3000
@@ -36,10 +38,10 @@ def selections(view, default_to_all=True):
 if ST3:
 
     def quote(view, s):
-        return urllib.parse.quote(s, safe='')
+        return parse_quote(s, safe='')
 
     def unquote(view, s):
-        return urllib.parse.unquote(s)
+        return parse_unquote(s)
 
 else:
     # py26 urllib does not quote unicode, so encode first
