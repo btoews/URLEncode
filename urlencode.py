@@ -3,9 +3,6 @@ import sublime_plugin
 import urllib
 
 
-ST3 = sublime.version() == '' or int(sublime.version()) > 3000
-
-
 def get_current_encoding(view, default='utf8'):
     """Get the encoding of view, else return default
     """
@@ -21,17 +18,22 @@ def get_current_encoding(view, default='utf8'):
     return view_encoding
 
 
-def selections(view, default_to_all=True):
-    """Return all non-empty selections in view
-    If None, return entire view if default_to_all is True
-    """
-    regions = [r for r in view.sel() if not r.empty()]
+def updateSelection(self, edit, command):
+    view = self.view
+    selection = view.sel()
+    for region in selection:
+        if region.empty():
+            continue
 
-    if not regions and default_to_all:
-        regions = [sublime.Region(0, view.size())]
+        s = view.substr(region)
 
-    return regions
+        view.replace(edit, region, command(view, s))
 
+        # update coords so next regions get shifted and still refer the correct buffer positions
+        region.b = region.a + len(s)
+
+
+ST3 = sublime.version() == '' or int(sublime.version()) > 3000
 
 if ST3:
 
@@ -64,24 +66,12 @@ else:
         return s
 
 
-
 class UrlencodeCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        """Main plugin logic for the 'urlencode' command.
-        """
-        view = self.view
-        for region in selections(view):
-            s = view.substr(region)
-            view.replace(edit, region, quote(view, s))
-
+        updateSelection(self, edit, quote)
 
 class UrldecodeCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        """Main plugin logic for the 'urldecode' command.
-        """
-        view = self.view
-        for region in selections(view):
-            s = view.substr(region)
-            view.replace(edit, region, unquote(view, s))
+        updateSelection(self, edit, unquote)
