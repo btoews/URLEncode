@@ -27,10 +27,7 @@ def updateSelection(self, edit, command):
 
         s = view.substr(region)
 
-        if command == 'encode':
-            view.replace(edit, region, quote(view, s))
-        elif command == 'decode':
-            view.replace(edit, region, unquote(view, s))
+        view.replace(edit, region, command(view, s))
 
         # update coords so next regions get shifted and still refer the correct buffer positions
         region.b = region.a + len(s)
@@ -72,9 +69,9 @@ else:
 class UrlencodeCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        updateSelection(self, edit, 'encode')
+        updateSelection(self, edit, quote)
 
 class UrldecodeCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        updateSelection(self, edit, 'decode')
+        updateSelection(self, edit, unquote)
